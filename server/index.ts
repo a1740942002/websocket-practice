@@ -1,17 +1,20 @@
-import express from 'express'
-import { createServer } from 'node:http'
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import type {
   ClientToServerEvents,
   InterServerEvents,
-  Message,
   ServerToClientEvents,
-  SocketData,
-  UserInfo
+  SocketData
 } from '../types'
+import { httpServer } from './config'
+import {
+  handleUserRegistration,
+  handleDisconnect
+} from './handlers/user-handler'
+import {
+  handleConversationMessage,
+  handleGetConversation
+} from './handlers/conversation-handler'
 
-const app = express()
-const httpServer = createServer(app)
 export const io = new Server<
   ClientToServerEvents,
   ServerToClientEvents,
@@ -24,9 +27,28 @@ export const io = new Server<
   }
 })
 
-export const users: UserInfo[] = []
-export const conversationMap: Record<string, Message[]> = {}
+io.on(
+  'connection',
+  (
+    socket: Socket<
+      ClientToServerEvents,
+      ServerToClientEvents,
+      InterServerEvents,
+      SocketData
+    >
+  ) => {
+    console.log(`--------------------------------`)
+    console.log(`User connected: ${socket.id}`)
+    console.log(`--------------------------------`)
+
+    handleUserRegistration(socket)
+    handleConversationMessage(io, socket)
+    handleGetConversation(socket)
+    handleDisconnect(io, socket)
+  }
+)
 
 httpServer.listen(3000, () => {
-  console.log('server running at http://localhost:3000')
+  console.log('Server running at http://localhost:3000')
+  console.log('Event handlers registered.')
 })
