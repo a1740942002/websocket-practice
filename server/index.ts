@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
   })
 
   // 處理私人訊息
-  socket.on('conversaction', (message: Message) => {
+  socket.on('conversation', (message: Message) => {
     if (!message.to) return
 
     // 獲取對話ID (組合發送者和接收者ID)
@@ -84,14 +84,14 @@ io.on('connection', (socket) => {
     const recipientSocketId = getUserSocketId(message.to)
 
     // 1. 發送給發送者 (更新他的聊天記錄)
-    socket.emit('conversactions', {
+    socket.emit('conversations', {
       partnerId: message.to,
       messages: conversationMap[conversationId]
     })
 
     // 2. 發送給接收者 (如果在線)
     if (recipientSocketId) {
-      io.to(recipientSocketId).emit('conversactions', {
+      io.to(recipientSocketId).emit('conversations', {
         partnerId: message.sender,
         messages: conversationMap[conversationId]
       })
@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
     'get-conversation',
     ({ sender, receiver }: { sender: string; receiver: string }) => {
       const conversationId = getConversationId(sender, receiver)
-      socket.emit('conversactions', {
+      socket.emit('conversations', {
         partnerId: receiver,
         messages: conversationMap[conversationId] || []
       })

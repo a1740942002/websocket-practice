@@ -53,7 +53,7 @@ export default function App() {
 
     // 監聽私人訊息
     socket.current.on(
-      'conversactions',
+      'conversations',
       (data: { partnerId: string; messages: Message[] }) => {
         setConversations((prev) => ({
           ...prev,
@@ -64,7 +64,7 @@ export default function App() {
 
     return () => {
       socket.current?.off('users')
-      socket.current?.off('conversactions')
+      socket.current?.off('conversations')
     }
   }, [socket, userId])
 
@@ -89,7 +89,7 @@ export default function App() {
       to: selectedUser.userId
     }
 
-    socket.current?.emit('conversaction', message)
+    socket.current?.emit('conversation', message)
     setInputValue('')
   }
 
