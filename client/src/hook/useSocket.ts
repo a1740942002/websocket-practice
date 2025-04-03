@@ -2,14 +2,18 @@ import { useRef } from 'react'
 import { Socket } from 'socket.io-client'
 import { useEffect } from 'react'
 import { io } from 'socket.io-client'
+import { ClientToServerEvents } from '../../../types'
+import { ServerToClientEvents } from '../../../types'
 
 const createSocket = () => {
-  const socket = io('http://localhost:3000')
+  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+    'http://localhost:3000'
+  )
   return socket
 }
 
 export function useSocket() {
-  const socket = useRef<Socket | null>(null)
+  const socket = useRef<ReturnType<typeof createSocket> | null>(null)
 
   useEffect(() => {
     // 連接到 Express 伺服器

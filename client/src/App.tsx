@@ -69,10 +69,13 @@ export default function App() {
   }, [socket, userId])
 
   // 選擇聊天對象
-  const selectChatPartner = (user: UserInfo) => {
-    setSelectedUser(user)
+  const selectChatPartner = (selectedUser: UserInfo) => {
+    setSelectedUser(selectedUser)
     // 請求對話歷史
-    socket.current?.emit('get-conversation', { userId, partnerId: user.userId })
+    socket.current?.emit('get-conversation', {
+      sender: userId,
+      receiver: selectedUser.userId
+    })
   }
 
   // 發送訊息
